@@ -1,0 +1,216 @@
+/* Базовые стили и переменные */
+:root {
+    --primary-color: #4a90e2;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-color: #2c3e50;
+    --text-light: #7f8c8d;
+    --border-color: #e2e8f0;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Контейнер приложения */
+.app-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Шапка */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.app-header h1 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-name {
+    font-weight: 600;
+}
+
+/* Карточки и общие блоки */
+.card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Кнопки */
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #357abd;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+}
+
+.btn-danger {
+    background-color: transparent;
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-text:hover {
+    color: var(--danger-color);
+}
+
+/* Формы */
+.auth-form, .add-habit-form {
+    display: flex;
+    gap: 10px;
+}
+
+.auth-form input, .add-habit-form input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: var(--transition);
+}
+
+.auth-form input:focus, .add-habit-form input:focus {
+    border-color: var(--primary-color);
+}
+
+/* Список привычек */
+.habits-list {
+    list-style: none;
+    margin-top: 15px;
+}
+
+.habit-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    transition: var(--transition);
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.habit-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.habit-item:hover {
+    background-color: rgba(74, 144, 226, 0.05);
+}
+
+.habit-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.habit-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.habit-text {
+    font-size: 1rem;
+    transition: var(--transition);
+    word-break: break-word;
+}
+
+/* Состояние выполненной привычки */
+.habit-item.completed {
+    background-color: rgba(46, 204, 113, 0.08);
+}
+
+.habit-item.completed .habit-text {
+    text-decoration: line-through;
+    color: var(--text-light);
+}
+
+.loading-indicator {
+    text-align: center;
+    color: var(--text-light);
+    padding: 15px;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .auth-form, .add-habit-form {
+        flex-direction: column;
+    }
+    
+    .app-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

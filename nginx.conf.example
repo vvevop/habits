@@ -1,0 +1,22 @@
+server {
+    # Слушаем порт 80 для HTTP. Рекомендуется настроить и порт 443 для HTTPS.
+    listen 80;
+
+    # Укажите здесь IP-адрес вашего VPS или ваше доменное имя
+    server_name your_domain_or_vps_ip;
+
+    # Перенаправление всех запросов, начинающихся с /api, на бэкенд FastAPI
+    location /api {
+        proxy_pass http://localhost:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Можно добавить редирект для корневого пути, чтобы было понятно, что это API
+    location = / {
+        return 200 'Habit Tracker API is running';
+        add_header Content-Type text/plain;
+    }
+}

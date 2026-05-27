@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Трекер привычек</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Блок авторизации / Ввода имени -->
+        <header class="app-header">
+            <h1>Трекер привычек</h1>
+            <div id="user-section" class="user-section">
+                <!-- Заполняется динамически из JS -->
+            </div>
+        </header>
+
+        <main class="app-content">
+            <!-- Форма входа (если имя не задано) -->
+            <section id="auth-card" class="card auth-card hidden">
+                <h2>Добро пожаловать</h2>
+                <p>Введите ваше имя, чтобы начать отслеживать привычки:</p>
+                <form id="auth-form" class="auth-form">
+                    <input type="text" id="username-input" placeholder="Ваше имя" required minlength="2">
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </form>
+            </section>
+
+            <!-- Основной интерфейс трекера -->
+            <section id="tracker-section" class="tracker-section hidden">
+                <!-- Форма добавления привычки -->
+                <div class="card add-habit-card">
+                    <form id="add-habit-form" class="add-habit-form">
+                        <input type="text" id="habit-text-input" placeholder="Новая привычка (например: Зарядка 15 мин)" required minlength="3">
+                        <button type="submit" class="btn btn-success">Добавить</button>
+                    </form>
+                </div>
+
+                <!-- Список привычек -->
+                <div class="card list-card">
+                    <h2>Мои привычки</h2>
+                    <div id="loading-indicator" class="loading-indicator hidden">Загрузка данных...</div>
+                    <ul id="habits-list" class="habits-list">
+                        <!-- Элементы списка генерируются через JS -->
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

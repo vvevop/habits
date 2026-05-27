@@ -1,0 +1,20 @@
+# Virtual Environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Database file
+*.db
+*.sqlite
+*.sqlite3
+
+# Deployment / Service configurations
+nginx.conf
+habits.service
+config.js
+config.py
