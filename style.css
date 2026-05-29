@@ -1,6 +1,7 @@
 /* --- Глобальные переменные и база в стиле vvevop.ru --- */
 :root {
-    --primary-color: #6366f1;       
+    --primary-color: #6366f1;
+    --primary-color-rgb: 99, 102, 241;
     --accent-glow: #00f5d4;         
     --success-color: #10b981;       
     --danger-color: #f43f5e;        
@@ -62,7 +63,6 @@ body {
     gap: 12px;
 }
 
-/* Скрываем блок, если он пуст, чтобы не рисовалась пустая полоса на мобильных */
 .user-section:empty {
     display: none !important;
 }
@@ -101,10 +101,16 @@ body {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     transition: var(--transition);
+    position: relative;
+    overflow: visible; 
 }
 
 .card:hover {
     border-color: rgba(255, 255, 255, 0.12);
+}
+
+.add-habit-card:has(.custom-select-container.active) {
+    z-index: 20;
 }
 
 .card h2 {
@@ -113,10 +119,9 @@ body {
     font-weight: 700;
 }
 
-/* Стили для карточки авторизации */
 .auth-card p {
     color: var(--text-light);
-    margin-bottom: 24px; /* Увеличенный отступ от описания до инпута */
+    margin-bottom: 24px; 
     font-size: 0.95rem;
 }
 
@@ -148,6 +153,19 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
     background: linear-gradient(135deg, #4338ca, #2563eb);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 10px 18px;
+    font-size: 0.9rem;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .btn-success {
@@ -182,46 +200,369 @@ body {
     cursor: pointer;
     font-size: 0.9rem;
     transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* Формы и поля ввода */
-.auth-form, .add-habit-form {
+/* Формы добавления привычки */
+.add-habit-card {
     display: flex;
+    flex-direction: column;
     gap: 12px;
 }
 
+.add-habit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.add-habit-main-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.add-habit-main-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.habit-settings-toggle-row {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#toggle-add-settings-btn {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+#toggle-add-settings-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#toggle-add-settings-btn:hover .cog-icon {
+    transform: rotate(45deg);
+}
+
+/* Панель настроек привычки */
+.add-habit-settings-panel, .habit-edit-panel {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 500px;
+    opacity: 1;
+    overflow: visible; 
+    transition: 
+        max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+        opacity 0.35s ease, 
+        padding 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+        margin 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.4s ease;
+}
+
+/* Скрытое состояние */
+.add-habit-settings-panel.collapsed, .habit-edit-panel.collapsed {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border-color: transparent !important;
+    pointer-events: none;
+    overflow: hidden !important; 
+}
+
+/* Группы настроек */
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.settings-group label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.color-picker {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.color-option {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-option input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.color-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: var(--transition);
+    display: inline-block;
+}
+
+.color-dot.primary { background-color: #6366f1; }
+.color-dot.success { background-color: #10b981; }
+.color-dot.danger  { background-color: #f43f5e; }
+.color-dot.warning { background-color: #f59e0b; }
+.color-dot.accent  { background-color: #00f5d4; }
+.color-dot.pink    { background-color: #ec4899; }
+.color-dot.sky     { background-color: #0ea5e9; }
+.color-dot.orange  { background-color: #f97316; }
+.color-dot.purple  { background-color: #a855f7; }
+.color-dot.mint    { background-color: #2dd4bf; }
+
+.color-option input:checked + .color-dot {
+    transform: scale(1.15);
+    border-color: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+}
+
+/* ==========================================
+   СТИЛИЗАЦИЯ ВИРТУАЛЬНОГО ВЫПАДАЮЩЕГО СПИСКА
+   ========================================== */
+.custom-select-container {
+    position: relative;
+    width: 100%;
+    user-select: none;
+}
+
+.custom-select-trigger {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: var(--transition);
+    outline: none;
+}
+
+.custom-select-trigger:hover,
+.custom-select-container.active .custom-select-trigger {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--habit-accent, var(--primary-color));
+    box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.15);
+}
+
+.custom-select-arrow {
+    color: var(--text-light);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.custom-select-container.active .custom-select-arrow {
+    transform: rotate(180deg);
+    color: #ffffff;
+}
+
+.custom-select-options {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background-color: #141821; 
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    overflow: hidden;
+    animation: selectDropdownFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.custom-select-options.hidden {
+    display: none !important;
+}
+
+.custom-option {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.custom-option:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+}
+
+.custom-option.selected {
+    background-color: rgba(var(--primary-color-rgb), 0.12);
+    color: var(--habit-accent, var(--primary-color));
+    font-weight: 600;
+    border-left: 3px solid var(--habit-accent, var(--primary-color));
+    padding-left: 13px; 
+}
+
+@keyframes selectDropdownFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Кастомные дни */
+.custom-days-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+    max-height: 100px;
+    opacity: 1;
+    transition: 
+        max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+        opacity 0.35s ease, 
+        margin-top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: visible;
+}
+
+.custom-days-container.collapsed {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    margin-top: 0 !important;
+    pointer-events: none;
+    overflow: hidden !important;
+}
+
+.day-checkbox-label {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+.day-checkbox-label input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.day-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+    transition: var(--transition);
+}
+
+.day-checkbox-label input:checked + .day-circle {
+    background-color: var(--habit-accent, var(--primary-color));
+    border-color: var(--habit-accent, var(--primary-color));
+    color: #ffffff;
+    box-shadow: 0 0 10px var(--habit-accent-glow, rgba(99, 102, 241, 0.4));
+}
+
+/* Карточка прогресса */
+.progress-card {
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.progress-bar-bg {
+    background: rgba(255, 255, 255, 0.05);
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-glow) 0%, var(--primary-color) 100%);
+    box-shadow: 0 0 10px rgba(0, 245, 212, 0.5);
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.progress-stats {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
 /* Базовые контейнеры для полей ввода */
-.auth-form input, .smooth-placeholder-wrapper {
+.auth-form input, .add-habit-form input, .smooth-placeholder-wrapper {
     flex: 1;
     min-width: 0; 
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     transition: var(--transition);
-}
-
-.auth-form input {
     padding: 14px 16px;
     font-size: 0.95rem;
     color: #ffffff;
     outline: none;
+    width: 100%;
 }
 
-.auth-form input:focus {
+.auth-form input:focus, .add-habit-form input:focus {
     border-color: var(--primary-color);
     background-color: rgba(255, 255, 255, 0.06);
     box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
 }
 
-.auth-form input::placeholder {
+.auth-form input::placeholder, .add-habit-form input::placeholder {
     color: #4b5563;
 }
 
-/* Контейнер кастомного плейсхолдера */
 .smooth-placeholder-wrapper {
     position: relative;
     display: flex;
     align-items: center;
+    padding: 0;
 }
 
 .smooth-placeholder-wrapper:focus-within {
@@ -267,7 +608,7 @@ body {
     font-size: 0.95rem;
     color: #4b5563;
     white-space: nowrap;
-    padding-right: 50px; /* Интервал повторения */
+    padding-right: 50px; 
     display: inline-block;
 }
 
@@ -277,26 +618,63 @@ body {
     margin-top: 20px;
 }
 
-.habit-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 18px;
+.habit-item-container {
+    position: relative;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
     transition: var(--transition);
     border-radius: 12px;
     margin-bottom: 10px;
-    gap: 12px;
+    overflow: visible; 
+    display: flex;
+    flex-direction: column;
 }
 
-.habit-item:last-child {
+.habit-item-container:last-child {
     margin-bottom: 0;
 }
 
-.habit-item:hover {
+.habit-item-container:focus-within,
+.habit-item-container:hover,
+.habit-item-container:has(.custom-select-container.active) {
+    z-index: 15;
+}
+
+/* 10 кастомных классов настройки цветов */
+.habit-item-container.color-primary { --habit-accent: #6366f1; --habit-accent-glow: rgba(99, 102, 241, 0.3); }
+.habit-item-container.color-success { --habit-accent: #10b981; --habit-accent-glow: rgba(16, 185, 129, 0.3); }
+.habit-item-container.color-danger  { --habit-accent: #f43f5e; --habit-accent-glow: rgba(244, 63, 94, 0.3); }
+.habit-item-container.color-warning { --habit-accent: #f59e0b; --habit-accent-glow: rgba(245, 158, 11, 0.3); }
+.habit-item-container.color-accent  { --habit-accent: #00f5d4; --habit-accent-glow: rgba(0, 245, 212, 0.3); }
+.habit-item-container.color-pink    { --habit-accent: #ec4899; --habit-accent-glow: rgba(236, 72, 153, 0.3); }
+.habit-item-container.color-sky     { --habit-accent: #0ea5e9; --habit-accent-glow: rgba(14, 165, 233, 0.3); }
+.habit-item-container.color-orange  { --habit-accent: #f97316; --habit-accent-glow: rgba(249, 115, 22, 0.3); }
+.habit-item-container.color-purple  { --habit-accent: #a855f7; --habit-accent-glow: rgba(168, 85, 247, 0.3); }
+.habit-item-container.color-mint    { --habit-accent: #2dd4bf; --habit-accent-glow: rgba(45, 212, 191, 0.3); }
+
+/* Интеграция цветов во время создания */
+.add-habit-card.color-primary { --habit-accent: #6366f1; --habit-accent-glow: rgba(99, 102, 241, 0.3); }
+.add-habit-card.color-success { --habit-accent: #10b981; --habit-accent-glow: rgba(16, 185, 129, 0.3); }
+.add-habit-card.color-danger  { --habit-accent: #f43f5e; --habit-accent-glow: rgba(244, 63, 94, 0.3); }
+.add-habit-card.color-warning { --habit-accent: #f59e0b; --habit-accent-glow: rgba(245, 158, 11, 0.3); }
+.add-habit-card.color-accent  { --habit-accent: #00f5d4; --habit-accent-glow: rgba(0, 245, 212, 0.3); }
+.add-habit-card.color-pink    { --habit-accent: #ec4899; --habit-accent-glow: rgba(236, 72, 153, 0.3); }
+.add-habit-card.color-sky     { --habit-accent: #0ea5e9; --habit-accent-glow: rgba(14, 165, 233, 0.3); }
+.add-habit-card.color-orange  { --habit-accent: #f97316; --habit-accent-glow: rgba(249, 115, 22, 0.3); }
+.add-habit-card.color-purple  { --habit-accent: #a855f7; --habit-accent-glow: rgba(168, 85, 247, 0.3); }
+.add-habit-card.color-mint    { --habit-accent: #2dd4bf; --habit-accent-glow: rgba(45, 212, 191, 0.3); }
+
+.habit-item-container:hover {
     background-color: rgba(255, 255, 255, 0.04);
-    border-color: rgba(99, 102, 241, 0.25);
+    border-color: rgba(var(--primary-color-rgb), 0.25);
+}
+
+.habit-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    gap: 12px;
 }
 
 .habit-item-left {
@@ -306,6 +684,42 @@ body {
     flex: 1;
     min-width: 0; 
 }
+
+.habit-item-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.habit-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.habit-meta-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.meta-tag {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.meta-tag.color-tag-primary { color: #818cf8; background: rgba(99, 102, 241, 0.1); }
+.meta-tag.color-tag-success { color: #34d399; background: rgba(16, 185, 129, 0.1); }
+.meta-tag.color-tag-danger  { color: #fb7185; background: rgba(244, 63, 94, 0.1); }
+.meta-tag.color-tag-warning { color: #fbbf24; background: rgba(245, 158, 11, 0.1); }
+.meta-tag.color-tag-accent  { color: #2dd4bf; background: rgba(0, 245, 212, 0.1); }
+.meta-tag.color-tag-pink    { color: #f472b6; background: rgba(236, 72, 153, 0.1); }
+.meta-tag.color-tag-sky     { color: #38bdf8; background: rgba(14, 165, 233, 0.1); }
+.meta-tag.color-tag-orange  { color: #fb923c; background: rgba(249, 115, 22, 0.1); }
+.meta-tag.color-tag-purple  { color: #c084fc; background: rgba(168, 85, 247, 0.1); }
+.meta-tag.color-tag-mint    { color: #2dd4bf; background: rgba(45, 212, 191, 0.1); }
 
 /* Кастомный чекбокс */
 .habit-checkbox {
@@ -326,9 +740,9 @@ body {
 }
 
 .habit-checkbox:checked {
-    background-color: var(--success-color);
-    border-color: var(--success-color);
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    background-color: var(--habit-accent, var(--success-color));
+    border-color: var(--habit-accent, var(--success-color));
+    box-shadow: 0 0 10px var(--habit-accent-glow, rgba(16, 185, 129, 0.4));
 }
 
 .habit-checkbox:checked::after {
@@ -350,15 +764,41 @@ body {
     word-break: break-word; 
 }
 
-.habit-item.completed {
+/* Стили завершения привычек */
+.habit-item-container.completed {
     background-color: rgba(16, 185, 129, 0.03);
     border-color: rgba(16, 185, 129, 0.15);
 }
 
-.habit-item.completed .habit-text {
+.habit-item-container.completed .habit-text {
     text-decoration: line-through;
     color: var(--text-light);
     opacity: 0.6;
+}
+
+.habit-item-container.color-primary.completed { background-color: rgba(99, 102, 241, 0.03); border-color: rgba(99, 102, 241, 0.15); }
+.habit-item-container.color-success.completed { background-color: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.15); }
+.habit-item-container.color-danger.completed  { background-color: rgba(244, 63, 94, 0.03); border-color: rgba(244, 63, 94, 0.15); }
+.habit-item-container.color-warning.completed { background-color: rgba(245, 158, 11, 0.03); border-color: rgba(245, 158, 11, 0.15); }
+.habit-item-container.color-accent.completed  { background-color: rgba(0, 245, 212, 0.03); border-color: rgba(0, 245, 212, 0.15); }
+.habit-item-container.color-pink.completed    { background-color: rgba(236, 72, 153, 0.03); border-color: rgba(236, 72, 153, 0.15); }
+.habit-item-container.color-sky.completed     { background-color: rgba(14, 165, 233, 0.03); border-color: rgba(14, 165, 233, 0.15); }
+.habit-item-container.color-orange.completed  { background-color: rgba(249, 115, 22, 0.03); border-color: rgba(249, 115, 22, 0.15); }
+.habit-item-container.color-purple.completed  { background-color: rgba(168, 85, 247, 0.03); border-color: rgba(168, 85, 247, 0.15); }
+.habit-item-container.color-mint.completed    { background-color: rgba(45, 212, 191, 0.03); border-color: rgba(45, 212, 191, 0.15); }
+
+/* Панель редактирования привычки */
+.habit-edit-panel {
+    background: rgba(0, 0, 0, 0.15);
+    border: none;
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 12px 12px;
+}
+
+.habit-edit-panel-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 /* Шапка списка и фильтры */
@@ -442,7 +882,6 @@ body {
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    /* Убираем gap, так как отступы перенесены на margin-bottom для эффекта схлопывания */
     max-width: calc(100% - 40px); 
 }
 
@@ -455,9 +894,9 @@ body {
     font-weight: 500;
     font-size: 0.95rem;
     opacity: 0;
-    transform: translateX(120%) scale(0.9); /* Появление из-за правой границы */
-    max-height: 150px; /* Ограничение высоты для корректной анимации сжатия */
-    margin-bottom: 10px; /* Отступ между уведомлениями */
+    transform: translateX(120%) scale(0.9); 
+    max-height: 150px; 
+    margin-bottom: 10px; 
     overflow: hidden;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -465,8 +904,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    
-    /* Анимация всех ключевых геометрических свойств */
+
     transition: 
         transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
         opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
@@ -475,13 +913,11 @@ body {
         margin 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Класс для отображения */
 .toast.show {
     opacity: 1;
     transform: translateX(0) scale(1);
 }
 
-/* Класс для плавного схлопывания и скрытия */
 .toast.hide {
     opacity: 0;
     transform: translateX(120%) scale(0.9);
@@ -493,7 +929,6 @@ body {
     border-left-width: 0;
 }
 
-/* Иконка внутри уведомления */
 .toast-icon {
     display: inline-flex;
     align-items: center;
@@ -507,7 +942,6 @@ body {
     flex-shrink: 0;
 }
 
-/* Разнообразие цветов для типов уведомлений */
 .toast.success {
     background-color: rgba(16, 185, 129, 0.85);
     border-left-color: #34d399;
@@ -533,25 +967,257 @@ body {
 }
 
 /* Анимации */
-.habit-item.fade-out {
+.habit-item-container.fade-out {
     opacity: 0;
     transform: scale(0.95);
     transition: all 0.25s ease-out;
 }
 
-.habit-item.fade-in {
+.habit-item-container.fade-in {
     animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* --- Стили для навигации по датам и календаря --- */
+.date-nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+}
+
+.btn-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    font-weight: 300;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+#today-btn {
+    padding: 10px 16px;
+}
+
+.current-date-display {
+    font-size: 1.15rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: var(--transition);
+    text-align: center;
+    white-space: nowrap;
+    flex-grow: 1;
+}
+
+.current-date-display:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.calendar-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.25rem;
+    transition: var(--transition);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.calendar-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Обертка плавной анимации скрытия календаря */
+.calendar-body-wrapper {
+    overflow: hidden;
+    max-height: 500px;
+    opacity: 1;
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+
+.calendar-body-wrapper.collapsed {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.calendar-day-name {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.calendar-day {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1; 
+    height: auto; 
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s, border 0.2s;
+    border: 2px solid transparent;
+    font-size: 0.9rem;
+    background-clip: padding-box; 
+    z-index: 1;
+}
+
+.calendar-day::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border-radius: 50%;
+    background-color: rgba(var(--primary-color-rgb), 0);
+    transition: background-color 0.3s;
+    z-index: -1;
+}
+
+.calendar-day.has-data::before {
+    background-color: rgba(var(--primary-color-rgb), var(--heatmap-alpha, 0.15));
+}
+
+.calendar-day.other-month {
+    color: var(--text-light);
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.calendar-day:not(.other-month):hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.calendar-day.today {
+    border-color: var(--accent-glow);
+    color: var(--accent-glow);
+}
+
+.calendar-day.selected {
+    background-color: var(--primary-color) !important; 
+    color: white;
+    font-weight: 700;
+}
+
+/* ==========================================
+   НОВЫЕ СТИЛИ ДЛЯ СТРАНИЦЫ АУТЕНТИФИКАЦИИ
+   ========================================== */
+.auth-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
+    gap: 10px;
+}
+
+.auth-tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px;
+    color: var(--text-light);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    border-bottom: 2px solid transparent;
+    text-align: center;
+}
+
+.auth-tab-btn:hover {
+    color: var(--text-color);
+}
+
+.auth-tab-btn.active {
+    color: #ffffff;
+    border-bottom-color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.auth-form h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #00f5d4 0%, #00bbf9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-form .btn-primary {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.auth-footer-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    font-size: 0.85rem;
+}
+
+.auth-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.auth-link:hover {
+    color: var(--accent-glow);
+    text-decoration: underline;
+}
+
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ==========================================
@@ -559,19 +1225,12 @@ body {
    ========================================== */
 
 @media (max-width: 768px) {
-    body {
-        padding: 30px 16px;
-    }
-    .card {
-        padding: 20px;
-    }
+    body { padding: 30px 16px; }
+    .card { padding: 20px; }
 }
 
 @media (max-width: 500px) {
-    body {
-        align-items: flex-start; 
-        padding: 20px 12px;
-    }
+    body { align-items: flex-start; padding: 20px 12px; }
 
     .app-header {
         flex-direction: column;
@@ -581,9 +1240,7 @@ body {
         margin-bottom: 1.5rem;
     }
 
-    .app-header h1 {
-        font-size: 1.6rem;
-    }
+    .app-header h1 { font-size: 1.6rem; }
 
     .user-section {
         justify-content: center;
@@ -598,11 +1255,10 @@ body {
         gap: 10px;
     }
 
-    .auth-form input, .smooth-placeholder-wrapper {
+    .auth-form input, .add-habit-form input, .smooth-placeholder-wrapper {
         width: 100%;
     }
 
-    /* Кнопки на всю ширину применяются только в формах ввода */
     .auth-form .btn, .add-habit-form .btn {
         width: 100%;
         padding: 14px 20px;
@@ -614,10 +1270,7 @@ body {
         gap: 12px;
     }
 
-    .list-header h2 {
-        text-align: center;
-        font-size: 1.2rem;
-    }
+    .list-header h2 { text-align: center; font-size: 1.2rem; }
 
     .filter-controls {
         width: 100%;
@@ -631,63 +1284,69 @@ body {
         font-size: 0.8rem;
     }
 
-    /* Включаем плавную аппаратную бегущую строку на мобильных */
+    .date-nav-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .btn-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    #today-btn {
+        display: inline-flex !important; 
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .current-date-display {
+        font-size: 1rem;
+        padding: 6px 8px;
+        text-align: center;
+        flex-grow: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .smooth-placeholder-track {
         animation: smooth-marquee 15s linear infinite;
     }
 }
 
 @keyframes smooth-marquee {
-    0% {
-        transform: translate3d(0, 0, 0);
-    }
-    100% {
-        /* Двигаем ровно на 50% длины трека (ширина одного дубликата) */
-        transform: translate3d(-50%, 0, 0);
-    }
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
 }
 
 @media (max-width: 380px) {
-    .card {
-        padding: 16px 12px;
-    }
-
-    .habit-item {
-        padding: 10px 12px;
-        gap: 8px;
-    }
-
-    .habit-item-left {
-        gap: 10px;
-    }
-
-    .habit-text {
-        font-size: 0.9rem;
-    }
-
-    .btn-danger.delete-btn {
-        padding: 8px 12px;
-        font-size: 0.8rem;
-        border-radius: 8px;
-    }
+    .card { padding: 16px 12px; }
+    .date-nav-container { gap: 4px; }
+    .habit-item { padding: 10px 12px; gap: 8px; }
+    .habit-item-left { gap: 10px; }
+    .habit-text { font-size: 0.9rem; }
+    .btn-danger.delete-btn { padding: 8px 12px; font-size: 0.8rem; border-radius: 8px; }
+    .calendar-grid { gap: 4px; }
 }
 
 @media (max-height: 580px) {
-    body {
-        align-items: flex-start;
-        padding-top: 15px;
-        padding-bottom: 15px;
-    }
-    .app-header {
-        margin-bottom: 1rem;
-    }
+    body { align-items: flex-start; padding-top: 15px; padding-bottom: 15px; }
+    .app-header { margin-bottom: 1rem; }
 }
 
-/* Исправление бага выделения для градиентного заголовка */
 .app-header h1::selection {
-    background: rgba(0, 245, 212, 0.3); /* Мягкий неоново-бирюзовый фон выделения */
-    -webkit-text-fill-color: #ffffff;  /* Возвращаем буквам белый цвет при выделении */
-    color: #ffffff;                     /* Резервное свойство */
+    background: rgba(0, 245, 212, 0.3); 
+    -webkit-text-fill-color: #ffffff;  
+    color: #ffffff;                     
 }
 
 .app-header h1::-moz-selection {
@@ -696,9 +1355,8 @@ body {
     color: #ffffff;
 }
 
-/* Красивое стилизованное выделение для всех остальных текстов на сайте */
 ::selection {
-    background: rgba(99, 102, 241, 0.35); /* Полупрозрачный индиго вместо стандартного синего */
+    background: rgba(99, 102, 241, 0.35); 
     color: #ffffff;
 }
 

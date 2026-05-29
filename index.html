@@ -8,7 +8,6 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Блок авторизации / Ввода имени -->
         <header class="app-header">
             <h1>Трекер привычек</h1>
             <div id="user-section" class="user-section">
@@ -17,24 +16,129 @@
         </header>
 
         <main class="app-content">
-            <!-- Форма входа (если имя не задано) -->
+            <!-- КАРТОЧКА ВХОДА, РЕГИСТРАЦИИ И СБРОСА -->
             <section id="auth-card" class="card auth-card hidden">
-                <h2>Добро пожаловать</h2>
-                <p>Введите ваше имя, чтобы начать отслеживать привычки:</p>
-                <form id="auth-form" class="auth-form">
-                    <input type="text" id="username-input" placeholder="Ваше имя" required minlength="2">
+                <div class="auth-tabs">
+                    <button id="login-tab-btn" class="auth-tab-btn active" data-form="login-form">Вход</button>
+                    <button id="register-tab-btn" class="auth-tab-btn" data-form="register-form">Регистрация</button>
+                </div>
+
+                <!-- Форма входа -->
+                <form id="login-form" class="auth-form">
+                    <h2>Вход в аккаунт</h2>
+                    <div class="form-group">
+                        <label for="login-username">Имя пользователя</label>
+                        <input type="text" id="login-username" required minlength="2" placeholder="Введите имя пользователя">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Пароль</label>
+                        <input type="password" id="login-password" required placeholder="Введите пароль">
+                    </div>
                     <button type="submit" class="btn btn-primary">Войти</button>
+                    <div class="auth-footer-links">
+                        <span class="auth-link" id="goto-reset-btn">Забыли пароль?</span>
+                    </div>
+                </form>
+
+                <!-- Форма регистрации -->
+                <form id="register-form" class="auth-form hidden">
+                    <h2>Создание аккаунта</h2>
+                    <div class="form-group">
+                        <label for="register-username">Имя пользователя</label>
+                        <input type="text" id="register-username" required minlength="2" placeholder="Придумайте имя">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Пароль</label>
+                        <input type="password" id="register-password" required minlength="4" placeholder="Минимум 4 символа">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-secret">Секретное слово (для восстановления)</label>
+                        <input type="text" id="register-secret" required minlength="2" placeholder="Например: Кличка питомца">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                </form>
+
+                <!-- Форма восстановления пароля -->
+                <form id="reset-form" class="auth-form hidden">
+                    <h2>Восстановление пароля</h2>
+                    <div class="form-group">
+                        <label for="reset-username">Имя пользователя</label>
+                        <input type="text" id="reset-username" required minlength="2" placeholder="Введите ваше имя пользователя">
+                    </div>
+                    <div class="form-group">
+                        <label for="reset-secret">Секретное слово</label>
+                        <input type="text" id="reset-secret" required placeholder="Введите ваше секретное слово">
+                    </div>
+                    <div class="form-group">
+                        <label for="reset-password">Новый пароль</label>
+                        <input type="password" id="reset-password" required minlength="4" placeholder="Минимум 4 символа">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сбросить пароль</button>
+                    <div class="auth-footer-links">
+                        <span class="auth-link" id="back-to-login-btn">Вернуться к входу</span>
+                    </div>
                 </form>
             </section>
 
             <!-- Основной интерфейс трекера -->
             <section id="tracker-section" class="tracker-section hidden">
-                <!-- Форма добавления привычки -->
-                <div class="card add-habit-card">
+                
+                <!-- Навигация по датам -->
+                <div class="date-nav-container card">
+                    <button id="prev-day-btn" class="btn-icon">‹</button>
+                    <button id="today-btn" class="btn btn-secondary">Сегодня</button>
+                    <div id="current-date-display" class="current-date-display"></div>
+                    <button id="next-day-btn" class="btn-icon">›</button>
+                </div>
+                
+                <div id="calendar-container" class="calendar-container"></div>
+
+                <!-- Форма добавления привычки с настройками -->
+                <div class="card add-habit-card color-primary">
                     <form id="add-habit-form" class="add-habit-form">
-                        <input type="text" id="habit-text-input" placeholder="Новая привычка (например: Зарядка 15 мин)" required minlength="3">
-                        <button type="submit" class="btn btn-success">Добавить</button>
+                        <div class="add-habit-main-row">
+                            <input type="text" id="habit-text-input" placeholder="Новая привычка (например: Зарядка 15 мин)" required minlength="3">
+                            <button type="submit" class="btn btn-success">Добавить</button>
+                        </div>
+                        
+                        <!-- Переключатель блока настроек -->
+                        <div class="habit-settings-toggle-row">
+                            <button type="button" id="toggle-add-settings-btn" class="btn-text">
+                                <span id="cog-container"></span> Настройки привычки
+                            </button>
+                        </div>
+                        
+                        <!-- Панель настроек новой привычки -->
+                        <div id="add-habit-settings-panel" class="add-habit-settings-panel collapsed">
+                            <div class="settings-group">
+                                <label>Цвет привычки:</label>
+                                <div class="color-picker">
+                                    <label class="color-option"><input type="radio" name="habit-color" value="primary" checked><span class="color-dot primary" title="Индиго"></span></label>
+                                    <label class="color-option"><input type="radio" name="habit-color" value="success"><span class="color-dot success" title="Изумруд"></span></label>
+                                    <label class="color-option"><input type="radio" name="habit-color" value="danger"><span class="color-dot danger" title="Розовый"></span></label>
+                                    <label class="color-option"><input type="radio" name="habit-color" value="warning"><span class="color-dot warning" title="Янтарный"></span></label>
+                                    <label class="color-option"><input type="radio" name="habit-color" value="accent"><span class="color-dot accent" title="Бирюза"></span></label>
+                                    <label class="color-option"><input type="radio" name="habit-color" value="pink"><span class="color-dot pink" title="Фуксия"></span></label>
+                                    <label class="color-option"><input type="radio" name="habit-color" value="sky"><span class="color-dot sky" title="Небо"></span></label>
+                                    <label class="color-option"><input type="radio" name="habit-color" value="orange"><span class="color-dot orange" title="Апельсин"></span></label>
+                                    <label class="color-option"><input type="radio" name="habit-color" value="purple"><span class="color-dot purple" title="Фиолетовый"></span></label>
+                                    <label class="color-option"><input type="radio" name="habit-color" value="mint"><span class="color-dot mint" title="Мята"></span></label>
+                                </div>
+                            </div>
+                        </div>
                     </form>
+                </div>
+
+                <!-- Карточка прогресса за выбранный день -->
+                <div id="today-progress-card" class="card progress-card hidden">
+                    <div class="progress-info">
+                        <span>Прогресс за выбранный день</span>
+                        <span id="progress-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div id="progress-stats" class="progress-stats">0 из 0 выполнено</div>
                 </div>
 
                 <!-- Список привычек -->
@@ -62,7 +166,7 @@
 
     <!-- Контейнер для уведомлений -->
     <div id="notification-container" class="notification-container"></div>
-
+    
     <script src="config.js"></script>
     <script src="script.js"></script>
 </body>
